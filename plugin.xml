@@ -125,5 +125,5 @@
             
         <framework src="src/android/build-extras.gradle" custom="true" type="gradleReference"/>
     </platform>
-    <hook type="after_prepare" src="scripts/setupFirebaseCredentials.js" />
+    <!--<hook type="after_prepare" src="scripts/setupFirebaseCredentials.js" />-->
 </plugin>
