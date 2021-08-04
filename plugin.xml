@@ -1,17 +1,17 @@
 <?xml version='1.0' encoding='utf-8'?>
-<plugin id="cordova-plugin-firebase-ml-kit-barcode-scanner" version="1.0" xmlns="http://apache.org/cordova/ns/plugins/1.0"
+<plugin id="cordova-plugin-firebase-ml-kit-barcode-scanner" version="1.0" 
+        xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android">
     <name>cordova-plugin-firebase-ml-kit-barcode-scanner</name>
     <js-module name="cordova-plugin-firebase-ml-kit-barcode-scanner" src="www/main.js">
         <clobbers target="cordova.plugins.scanner"/>
     </js-module>
-        
     <engines>
         <engine name="cordova" version=">=9.0.0"/>
         <engine name="cordova-android" version=">=8.1.0"/>
-        <!--<engine name="cordova-ios" version=">=5.1.1"/>-->
+        <engine name="cordova-ios" version=">=5.1.1"/>
     </engines>
-    <!--<platform name="ios">
+    <platform name="ios">
         <config-file parent="/*" target="config.xml">
             <feature name="cordova-plugin-firebase-ml-kit-barcode-scanner">
                 <param name="ios-package" value="CDViOSScanner"/>
@@ -22,18 +22,17 @@
         <framework src="AVFoundation.framework"/>
         <podspec>
             <config>
-                <source url="https://github.com/CocoaPods/Specs.git"/>
+                <source url="https://cdn.cocoapods.org/"/>
             </config>
-            <pods use-frameworks="false">
-                <pod name="FirebaseMLVision" spec="~> 0.19.0" />
-                <pod name="FirebaseMLVisionBarcodeModel" spec="~> 0.19.0" />
+            <pods use-frameworks="true">
+                <pod name="GoogleMLKit/BarcodeScanning" />
             </pods>
         </podspec>
         <header-file src="src/ios/CDViOSScanner.h"/>
         <source-file src="src/ios/CDViOSScanner.m"/>
         <header-file src="src/ios/CameraViewController.h"/>
         <source-file src="src/ios/CameraViewController.m"/>
-    </platform>-->
+    </platform>
     <platform name="android">
         <config-file parent="/*" target="res/xml/config.xml">
             <feature name="cordova-plugin-firebase-ml-kit-barcode-scanner">
@@ -43,15 +42,11 @@
 
         <config-file parent="/*" target="app/src/main/AndroidManifest.xml">
             <uses-permission android:name="android.permission.CAMERA" />
-            <uses-feature android:name="android.hardware.camera.autofocus" />
         </config-file>
         <config-file parent="application" target="app/src/main/AndroidManifest.xml">
             <meta-data
                     android:name="com.google.android.gms.version"
                     android:value="@integer/google_play_services_version" />
-            <meta-data
-                    android:name="com.google.firebase.ml.vision.DEPENDENCIES"
-                    android:value="barcode" />
 
             <activity android:screenOrientation="portrait" android:label="@string/title_activity_main" android:name="tl.cordova.plugin.firebase.mlkit.barcode.scanner.SecondaryActivity"/>
             <activity android:screenOrientation="portrait" android:label="Read Barcode" android:name="tl.cordova.plugin.firebase.mlkit.barcode.scanner.BarcodeCaptureActivity" android:theme="@style/Theme.AppCompat.Light"/>
@@ -64,9 +59,6 @@
             <meta-data
                     android:name="com.google.android.gms.version"
                     android:value="@integer/google_play_services_version" />
-            <meta-data
-                    android:name="com.google.firebase.ml.vision.DEPENDENCIES"
-                    android:value="barcode" />
 
             <activity android:screenOrientation="portrait" android:label="@string/title_activity_main" android:name="tl.cordova.plugin.firebase.mlkit.barcode.scanner.SecondaryActivity"/>
             <activity android:screenOrientation="portrait" android:label="Read Barcode" android:name="tl.cordova.plugin.firebase.mlkit.barcode.scanner.BarcodeCaptureActivity" android:theme="@style/Theme.AppCompat.Light"/>
@@ -95,6 +87,8 @@
                      target-dir="src/tl/cordova/plugin/firebase/mlkit/barcode/scanner"/>
         <source-file src="src/android/src/BarcodeScanningProcessor.java"
                      target-dir="src/tl/cordova/plugin/firebase/mlkit/barcode/scanner"/>
+        <source-file src="src/android/src/FrameMetadata.java"
+                     target-dir="src/tl/cordova/plugin/firebase/mlkit/barcode/scanner"/>
         <source-file src="src/android/src/SecondaryActivity.java"
                      target-dir="src/tl/cordova/plugin/firebase/mlkit/barcode/scanner"/>
 
@@ -121,10 +115,10 @@
 
         <framework src="androidx.appcompat:appcompat:1.1.0" />
         <framework src="com.google.android.material:material:1.0.0" />
-        <framework src="com.google.firebase:firebase-ml-vision:24.0.3" />
-        <framework src="com.google.firebase:firebase-ml-vision-barcode-model:16.1.1" />
-            
+        <framework src="com.google.mlkit:barcode-scanning:16.2.0" />
+        <framework src="com.google.mlkit:camera:16.0.0-beta1" />
+        
         <framework src="src/android/build-extras.gradle" custom="true" type="gradleReference"/>
     </platform>
-    <!--<hook type="after_prepare" src="scripts/setupFirebaseCredentials.js" />-->
+    <hook type="after_prepare" src="scripts/setupFirebaseCredentials.js" />
 </plugin>

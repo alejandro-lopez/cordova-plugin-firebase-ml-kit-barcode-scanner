@@ -15,7 +15,7 @@ const AndroidDestination = AndroidPlatform + "/app/google-services.json";
 const AndroidSrc = "google-services.json";
 
 module.exports = function(context) {
-  for(let platform of context.opts.platforms) {
+  /*for(let platform of context.opts.platforms) {
     if (platform == "android") {
       var json = fs.readFileSync(AndroidSrc).toString();
       fs.writeFileSync(AndroidDestination, json);
@@ -23,5 +23,5 @@ module.exports = function(context) {
       var plist = fs.readFileSync(IOSSrc).toString();
       fs.writeFileSync(IOSDestination, plist);
     }
-  }
+  }*/
 }

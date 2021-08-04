@@ -4,8 +4,7 @@
 // |  Imports
 // ----------------------------------------------------------------------------
 @import AVFoundation;
-// @import Vision;
-@import FirebaseMLVision;
+@import MLKit;
 
 // ----------------------------------------------------------------------------
 // |  Header File Imports
@@ -24,7 +23,7 @@
 @property(nonatomic, strong) dispatch_queue_t videoDataOutputQueue;
 @property(nonatomic, strong) AVCaptureVideoPreviewLayer *previewLayer;
 
-@property(nonatomic, strong) FIRVisionBarcodeDetector *barcodeDetector;
+@property(nonatomic, strong) MLKBarcodeScanner *barcodeDetector;
 @property(nonatomic, strong) UIButton *torchButton;
 
 @end
@@ -65,7 +64,7 @@
   
   // Set up camera.
   self.session = [[AVCaptureSession alloc] init];
-  self.session.sessionPreset = AVCaptureSessionPresetHigh;
+  self.session.sessionPreset = AVCaptureSessionPreset1280x720;
   
   _videoDataOutputQueue = dispatch_queue_create("VideoDataOutputQueue",
                           DISPATCH_QUEUE_SERIAL);
@@ -84,7 +83,7 @@
   //If barcodeFormats == 0 then process as a VIN with VIN verifications.
   if([_barcodeFormats  isEqual: @0]) {
     NSLog(@"Running VIN style");
-    formats = @(FIRVisionBarcodeFormatCode39|FIRVisionBarcodeFormatDataMatrix);
+      formats = @(MLKBarcodeFormatCode39|MLKBarcodeFormatDataMatrix);
   } else if([_barcodeFormats  isEqual: @1234]) {
     
   } else {
@@ -93,12 +92,12 @@
   NSLog(@"_barcodeFormats %@, %@", _barcodeFormats, formats);
   
   // Initialize barcode detector.
-  FIRVisionBarcodeDetectorOptions *options =
-    [[FIRVisionBarcodeDetectorOptions alloc]
-     initWithFormats: [formats intValue]];
-  FIRVision *vision = [FIRVision vision];
-  self.barcodeDetector = [vision barcodeDetectorWithOptions:options];
-  
+    //TODO get cordova settings
+    MLKBarcodeFormat format = MLKBarcodeFormatAll;
+    MLKBarcodeScannerOptions *barcodeOptions =
+        [[MLKBarcodeScannerOptions alloc] initWithFormats:format];
+
+    self.barcodeDetector = [MLKBarcodeScanner barcodeScannerWithOptions:barcodeOptions];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -130,37 +129,29 @@
   [self.session stopRunning];
 }
 
-#pragma mark - FIRVisionDetectorImageOrientation
+#pragma mark - imageOrientationFromDeviceOrientation
 
-- (FIRVisionDetectorImageOrientation)imageOrientationFromDeviceOrientation:(UIDeviceOrientation)deviceOrientation
-cameraPosition:(AVCaptureDevicePosition)cameraPosition {
+- (UIImageOrientation)
+  imageOrientationFromDeviceOrientation:(UIDeviceOrientation)deviceOrientation
+                         cameraPosition:(AVCaptureDevicePosition)cameraPosition {
   switch (deviceOrientation) {
     case UIDeviceOrientationPortrait:
-      if (cameraPosition == AVCaptureDevicePositionFront) {
-        return FIRVisionDetectorImageOrientationLeftTop;
-      } else {
-        return FIRVisionDetectorImageOrientationRightTop;
-      }
+      return cameraPosition == AVCaptureDevicePositionFront ? UIImageOrientationLeftMirrored
+                                                            : UIImageOrientationRight;
+
     case UIDeviceOrientationLandscapeLeft:
-      if (cameraPosition == AVCaptureDevicePositionFront) {
-        return FIRVisionDetectorImageOrientationBottomLeft;
-      } else {
-        return FIRVisionDetectorImageOrientationTopLeft;
-      }
+      return cameraPosition == AVCaptureDevicePositionFront ? UIImageOrientationDownMirrored
+                                                            : UIImageOrientationUp;
     case UIDeviceOrientationPortraitUpsideDown:
-      if (cameraPosition == AVCaptureDevicePositionFront) {
-        return FIRVisionDetectorImageOrientationRightBottom;
-      } else {
-        return FIRVisionDetectorImageOrientationLeftBottom;
-      }
+      return cameraPosition == AVCaptureDevicePositionFront ? UIImageOrientationRightMirrored
+                                                            : UIImageOrientationLeft;
     case UIDeviceOrientationLandscapeRight:
-      if (cameraPosition == AVCaptureDevicePositionFront) {
-        return FIRVisionDetectorImageOrientationTopRight;
-      } else {
-        return FIRVisionDetectorImageOrientationBottomRight;
-      }
-    default:
-      return FIRVisionDetectorImageOrientationTopLeft;
+      return cameraPosition == AVCaptureDevicePositionFront ? UIImageOrientationUpMirrored
+                                                            : UIImageOrientationDown;
+    case UIDeviceOrientationUnknown:
+    case UIDeviceOrientationFaceUp:
+    case UIDeviceOrientationFaceDown:
+      return UIImageOrientationUp;
   }
 }
 
@@ -170,31 +161,31 @@ cameraPosition:(AVCaptureDevicePosition)cameraPosition {
 didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
      fromConnection:(AVCaptureConnection *)connection {
 
-  FIRVisionImageMetadata *metadata = [[FIRVisionImageMetadata alloc] init];
   AVCaptureDevicePosition cameraPosition =
     AVCaptureDevicePositionBack;  // Set to the capture device you used.
-  metadata.orientation =
-    [self imageOrientationFromDeviceOrientation:UIDevice.currentDevice.orientation
-                                 cameraPosition:cameraPosition];
                                  
-  FIRVisionImage *image = [[FIRVisionImage alloc] initWithBuffer:sampleBuffer];
-  image.metadata = metadata;
+  MLKVisionImage *image = [[MLKVisionImage alloc] initWithBuffer:sampleBuffer];
+  image.orientation =
+   [self imageOrientationFromDeviceOrientation:UIDevice.currentDevice.orientation
+                                cameraPosition:cameraPosition];
+  // [START detect_barcodes]
+  [self.barcodeDetector
+      processImage:image
+        completion:^(NSArray<MLKBarcode *> *_Nullable barcodes, NSError *_Nullable error) {
+          if (!barcodes || barcodes.count == 0 || error != nil) {
+            return;
+          }
 
-    [self.barcodeDetector detectInImage:image
-                    completion:^(NSArray<FIRVisionBarcode *> *barcodes,
-                                 NSError *error) {
-    if (error != nil) {
-      return;
-    } else if (barcodes != nil) {
-      for (FIRVisionBarcode *barcode in barcodes) {
-        NSLog(@"Barcode value: %@", barcode.rawValue);
-          [self cleanupCaptureSession];
-          [_session stopRunning];
-          [delegate sendResult:barcode.rawValue];
-          break;
-      }
-    }
-  }];
+          // [START_EXCLUDE]
+          for (MLKBarcode *barcode in barcodes) {
+            [self cleanupCaptureSession];
+            [_session stopRunning];
+            [delegate sendResult:barcode.displayValue];
+            NSLog(@"DisplayValue: %@, RawValue: %@\n", barcode.displayValue, barcode.rawValue);
+          }
+          // [END_EXCLUDE]
+        }];
+  // [END detect_barcodes]
 }
 
 #pragma mark - Camera setup

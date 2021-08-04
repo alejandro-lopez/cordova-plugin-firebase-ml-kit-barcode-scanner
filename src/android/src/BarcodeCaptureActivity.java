@@ -33,10 +33,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.material.snackbar.Snackbar;
 
-import com.google.firebase.ml.vision.FirebaseVision;
-import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode;
-import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetector;
-import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetectorOptions;
+import com.google.mlkit.vision.barcode.Barcode;
 
 // ----------------------------------------------------------------------------
 // |  Java Imports
@@ -49,6 +46,7 @@ import java.io.IOException;
 import tl.cordova.plugin.firebase.mlkit.barcode.scanner.camera.CameraSource2;
 import tl.cordova.plugin.firebase.mlkit.barcode.scanner.camera.CameraSourcePreview;
 import tl.cordova.plugin.firebase.mlkit.barcode.scanner.camera.GraphicOverlay;
+import tl.cordova.plugin.firebase.mlkit.barcode.scanner.BarcodeScanningProcessor;
 
 public final class BarcodeCaptureActivity extends    AppCompatActivity
                                           implements BarcodeScanningProcessor.BarcodeUpdateListener {
@@ -58,7 +56,7 @@ public final class BarcodeCaptureActivity extends    AppCompatActivity
   public              Integer DetectionTypes                            ;
   public              double  ViewFinderWidth  = .5                     ;
   public              double  ViewFinderHeight = .7                     ;
-  public static final String  BarcodeValue     = "FirebaseVisionBarcode";
+  public static final String  BarcodeValue     = "Barcode";
 
   // ----------------------------------------------------------------------------
   // |  Private Properties
@@ -204,17 +202,12 @@ public final class BarcodeCaptureActivity extends    AppCompatActivity
     int detectionType = 0;
 
     if (DetectionTypes == 0 || DetectionTypes == 1234) {
-      detectionType = (FirebaseVisionBarcode.FORMAT_CODE_39 | FirebaseVisionBarcode.FORMAT_DATA_MATRIX);
+      detectionType = (Barcode.FORMAT_CODE_39 | Barcode.FORMAT_DATA_MATRIX);
     } else {
       detectionType = DetectionTypes;
     }
 
-    FirebaseVisionBarcodeDetectorOptions options =
-        new FirebaseVisionBarcodeDetectorOptions.Builder()
-        .setBarcodeFormats(detectionType).build();
-
-    FirebaseVisionBarcodeDetector barcodeDetector = FirebaseVision.getInstance().getVisionBarcodeDetector(options);
-    BarcodeScanningProcessor scanningProcessor = new BarcodeScanningProcessor(barcodeDetector, this);
+    BarcodeScanningProcessor scanningProcessor = new BarcodeScanningProcessor(this);
 
     CameraSource2.Builder builder = new CameraSource2.Builder(getApplicationContext(), scanningProcessor)
         .setFacing(CameraSource2.CAMERA_FACING_BACK)

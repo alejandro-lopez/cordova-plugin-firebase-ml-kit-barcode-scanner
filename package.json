@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-firebase-ml-kit-barcode-scanner",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Firebase ML Kit Barcode Scanner Plugin",
   "cordova": {
     "id": "cordova-plugin-firebase-ml-kit-barcode-scanner",
@@ -27,10 +27,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Ratsoc/cordova-plugin-firebase-ml-kit-barcode-scanner.git"
+    "url": "https://github.com/Meday/cordova-plugin-firebase-ml-kit-barcode-scanner.git"
   },
   "bugs": {
-    "url": "https://github.com/Ratsoc/cordova-plugin-firebase-ml-kit-barcode-scanner.git/issues"
+    "url": "https://github.com/Meday/cordova-plugin-firebase-ml-kit-barcode-scanner.git/issues"
   },
-  "homepage": "https://github.com/Ratsoc/cordova-plugin-firebase-ml-kit-barcode-scanner.git#readme"
+  "homepage": "https://github.com/Meday/cordova-plugin-firebase-ml-kit-barcode-scanner.git#readme"
 }
