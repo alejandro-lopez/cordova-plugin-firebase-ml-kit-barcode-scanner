@@ -6,7 +6,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:+'
-        classpath 'com.google.gms:google-services:4.3.3'
+        classpath 'com.google.gms:google-services:4.3.8'
     }
 }
 repositories {
@@ -16,7 +16,7 @@ repositories {
     }
 }
 dependencies {
-    compile "com.google.firebase:firebase-core:16.1.0"
+    compile "com.google.firebase:firebase-core:19.0.0"
 }
 ext.postBuildExtras = {
     android {
