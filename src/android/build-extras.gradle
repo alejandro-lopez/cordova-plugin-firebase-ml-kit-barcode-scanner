@@ -16,7 +16,7 @@ repositories {
     }
 }
 dependencies {
-    compile "com.google.firebase:firebase-core:16.0.8"
+    compile "com.google.firebase:firebase-core:16.1.0"
 }
 ext.postBuildExtras = {
     android {
