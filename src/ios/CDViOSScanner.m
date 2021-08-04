@@ -1,6 +1,11 @@
 // Note: This code was forked from https://github.com/dealrinc/cordova-gmv-barcode-scanner
 
 // ----------------------------------------------------------------------------
+// |  Imports
+// ----------------------------------------------------------------------------
+#import <FirebaseCore/FIRApp.h>
+
+// ----------------------------------------------------------------------------
 // |  Header File Imports
 // ----------------------------------------------------------------------------
 #import "CDViOSScanner.h"
@@ -24,7 +29,7 @@
 
 - (void)finishLaunching:(NSNotification *)notification
 {
-
+  [FIRApp configure];
 }
 
 

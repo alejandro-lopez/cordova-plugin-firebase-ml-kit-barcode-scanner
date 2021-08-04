@@ -16,13 +16,13 @@ import android.widget.TextView;
 // |  Google Imports
 // ----------------------------------------------------------------------------
 import com.google.android.gms.common.api.CommonStatusCodes;
-import com.google.mlkit.vision.barcode.Barcode;
+import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode;
 
 public class SecondaryActivity extends Activity implements View.OnClickListener {
   // ----------------------------------------------------------------------------
   // | Public Properties
   // ----------------------------------------------------------------------------
-  public static final String BarcodeValue = "Barcode";
+  public static final String BarcodeValue = "FirebaseVisionBarcode";
 
   // ----------------------------------------------------------------------------
   // | Protected Properties

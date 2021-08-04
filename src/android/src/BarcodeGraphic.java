@@ -12,7 +12,7 @@ import android.graphics.RectF;
 // ----------------------------------------------------------------------------
 // |  Google Imports
 // ----------------------------------------------------------------------------
-import com.google.mlkit.vision.barcode.Barcode;
+import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode;
 
 // ----------------------------------------------------------------------------
 // |  Our Imports
@@ -33,7 +33,7 @@ public class BarcodeGraphic extends GraphicOverlay.Graphic {
   private          int                   _Id       ;
   private          Paint                 _RectPaint;
   private          Paint                 _TextPaint;
-  private volatile Barcode _Barcode  ;
+  private volatile FirebaseVisionBarcode _Barcode  ;
 
   BarcodeGraphic(GraphicOverlay overlay) {
     super(overlay);
@@ -62,18 +62,18 @@ public class BarcodeGraphic extends GraphicOverlay.Graphic {
     this._Id = id;
   }
 
-  public Barcode getBarcode() {
+  public FirebaseVisionBarcode getBarcode() {
     return _Barcode;
   }
 
-  public void updateItem(Barcode barcode) {
+  public void updateItem(FirebaseVisionBarcode barcode) {
     _Barcode = barcode;
     postInvalidate();
   }
 
   @Override
   public void draw(Canvas canvas) {
-    Barcode barcode = _Barcode;
+    FirebaseVisionBarcode barcode = _Barcode;
     if (barcode == null) {
       return;
     }

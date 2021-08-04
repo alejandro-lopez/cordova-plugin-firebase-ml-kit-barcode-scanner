@@ -25,7 +25,8 @@ import androidx.annotation.StringDef;
 // |  Google Imports
 // ----------------------------------------------------------------------------
 import com.google.android.gms.common.images.Size;
-import com.google.mlkit.vision.common.InputImage;
+
+import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata;
 
 // ----------------------------------------------------------------------------
 // |  Java Imports
@@ -44,7 +45,6 @@ import java.util.Map;
 // |  Our Imports
 // ----------------------------------------------------------------------------
 import tl.cordova.plugin.firebase.mlkit.barcode.scanner.BarcodeScanningProcessor;
-import tl.cordova.plugin.firebase.mlkit.barcode.scanner.FrameMetadata;
 
 // The CameraSource send the preview frames to the barcode detector.
 @SuppressWarnings("deprecation")
@@ -835,10 +835,10 @@ public class CameraSource2 {
         try {
           synchronized (_CameraLock) {
             Log.d(TAG, "Process an image");
-            FrameMetadata metadata = new FrameMetadata.Builder()
+            FirebaseVisionImageMetadata metadata = new FirebaseVisionImageMetadata.Builder()
                     .setWidth(_PreviewSize.getWidth())
                     .setHeight(_PreviewSize.getHeight())
-                    .setFormat(InputImage.IMAGE_FORMAT_NV21)
+                    .setFormat(FirebaseVisionImageMetadata.IMAGE_FORMAT_NV21)
                     .setRotation(_Rotation)
                     .build();
             _ScanningProcessor.Process(data, metadata);

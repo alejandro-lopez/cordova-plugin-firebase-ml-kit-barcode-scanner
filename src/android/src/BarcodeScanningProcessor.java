@@ -13,35 +13,36 @@ import androidx.annotation.UiThread;
 // ----------------------------------------------------------------------------
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.mlkit.vision.barcode.Barcode;
-import com.google.mlkit.vision.barcode.BarcodeScanner;
-import com.google.mlkit.vision.barcode.BarcodeScanning;
-import com.google.mlkit.vision.common.InputImage;
+import com.google.firebase.ml.vision.FirebaseVision;
+import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode;
+import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetector;
+import com.google.firebase.ml.vision.common.FirebaseVisionImage;
+import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata;
 
 // ----------------------------------------------------------------------------
 // |  Java Imports
 // ----------------------------------------------------------------------------
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.List;
 
 // ----------------------------------------------------------------------------
 // |  Our Imports
 // ----------------------------------------------------------------------------
-import tl.cordova.plugin.firebase.mlkit.barcode.scanner.FrameMetadata;
 
 public class BarcodeScanningProcessor {
   // ----------------------------------------------------------------------------
   // | Public Properties
   // ----------------------------------------------------------------------------
-  public BarcodeScanningProcessor(Context p_Context) {
-    _Detector = BarcodeScanning.getClient();
+  public BarcodeScanningProcessor(FirebaseVisionBarcodeDetector p_BarcodeDetector, Context p_Context) {
+    _Detector = p_BarcodeDetector;
     if (p_Context instanceof BarcodeUpdateListener) {
       this._BarcodeUpdateListener = (BarcodeUpdateListener) p_Context;
     } else {
       throw new RuntimeException("Hosting activity must implement BarcodeUpdateListener");
     }
   }
-  
+
   // ----------------------------------------------------------------------------
   // | Protected Properties
   // ----------------------------------------------------------------------------
@@ -50,7 +51,7 @@ public class BarcodeScanningProcessor {
   // | Private Properties
   // ----------------------------------------------------------------------------
   private static final String TAG = "Barcode-Processor";
-  private final BarcodeScanner _Detector;
+  private final FirebaseVisionBarcodeDetector _Detector;
   private BarcodeUpdateListener _BarcodeUpdateListener;
 
   // To keep the latest images and its metadata.
@@ -58,19 +59,19 @@ public class BarcodeScanningProcessor {
   private ByteBuffer _LatestImage;
 
   @GuardedBy("this")
-  private FrameMetadata _LatestImageMetaData;
+  private FirebaseVisionImageMetadata _LatestImageMetaData;
 
   // To keep the images and metadata in process.
   @GuardedBy("this")
   private ByteBuffer _ProcessingImage;
 
   @GuardedBy("this")
-  private FrameMetadata _ProcessingMetaData;
+  private FirebaseVisionImageMetadata _ProcessingMetaData;
 
   // ----------------------------------------------------------------------------
   // |  Public Functions
   // ----------------------------------------------------------------------------
-  public synchronized void Process(ByteBuffer p_Data, FrameMetadata p_FrameMetadata) {
+  public synchronized void Process(ByteBuffer p_Data, FirebaseVisionImageMetadata p_FrameMetadata) {
     _LatestImage = p_Data;
     _LatestImageMetaData = p_FrameMetadata;
     if (_ProcessingImage == null && _ProcessingMetaData == null) {
@@ -81,7 +82,7 @@ public class BarcodeScanningProcessor {
   public void Stop() {
     try {
       _Detector.close();
-    } catch(Exception e) {
+    } catch(IOException e) {
       Log.e(TAG, "Error on FirebaseVisionBarcodeDetector close.", e);
     }
   }
@@ -104,21 +105,16 @@ public class BarcodeScanningProcessor {
     }
   }
 
-  private void ProcessImage(ByteBuffer p_Data, final FrameMetadata p_FrameMetadata) {
-    InputImage image = InputImage.fromByteBuffer(
-            p_Data,
-            p_FrameMetadata.getWidth(),
-            p_FrameMetadata.getHeight(),
-            p_FrameMetadata.getRotation(),
-            InputImage.IMAGE_FORMAT_NV21);
+  private void ProcessImage(ByteBuffer p_Data, final FirebaseVisionImageMetadata p_FrameMetadata) {
+    FirebaseVisionImage image = FirebaseVisionImage.fromByteBuffer(p_Data, p_FrameMetadata);
     DetectInVisionImage(image);
   }
 
-  private void DetectInVisionImage(InputImage p_Image) {
-    _Detector.process(p_Image).addOnSuccessListener(
-            new OnSuccessListener<List<Barcode>>() {
+  private void DetectInVisionImage(FirebaseVisionImage p_Image) {
+    _Detector.detectInImage(p_Image).addOnSuccessListener(
+            new OnSuccessListener<List<FirebaseVisionBarcode>>() {
               @Override
-              public void onSuccess(List<Barcode> results) {
+              public void onSuccess(List<FirebaseVisionBarcode> results) {
                 OnSuccess(results);
                 ProcessLatestImage();
               }
@@ -131,9 +127,9 @@ public class BarcodeScanningProcessor {
             });
   }
 
-  private void OnSuccess(List<Barcode> p_Barcodes) {
-    for(Barcode barcode: p_Barcodes) {
-      _BarcodeUpdateListener.onBarcodeDetected(barcode.getDisplayValue());
+  private void OnSuccess(List<FirebaseVisionBarcode> p_Barcodes) {
+    for(FirebaseVisionBarcode barcode: p_Barcodes) {
+      _BarcodeUpdateListener.onBarcodeDetected(barcode.getRawValue());
     }
   }
 
