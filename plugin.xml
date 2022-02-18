@@ -53,8 +53,8 @@
                     android:name="com.google.firebase.ml.vision.DEPENDENCIES"
                     android:value="barcode" />
 
-            <activity android:screenOrientation="portrait" android:label="@string/title_activity_main" android:name="tl.cordova.plugin.firebase.mlkit.barcode.scanner.SecondaryActivity"/>
-            <activity android:screenOrientation="portrait" android:label="Read Barcode" android:name="tl.cordova.plugin.firebase.mlkit.barcode.scanner.BarcodeCaptureActivity" android:theme="@style/Theme.AppCompat.Light"/>
+            <activity android:exported="false" android:screenOrientation="portrait" android:label="@string/title_activity_main" android:name="tl.cordova.plugin.firebase.mlkit.barcode.scanner.SecondaryActivity"/>
+            <activity android:exported="false" android:screenOrientation="portrait" android:label="Read Barcode" android:name="tl.cordova.plugin.firebase.mlkit.barcode.scanner.BarcodeCaptureActivity" android:theme="@style/Theme.AppCompat.Light"/>
         </config-file>
 
         <config-file parent="/*" target="AndroidManifest.xml">
@@ -68,8 +68,8 @@
                     android:name="com.google.firebase.ml.vision.DEPENDENCIES"
                     android:value="barcode" />
 
-            <activity android:screenOrientation="portrait" android:label="@string/title_activity_main" android:name="tl.cordova.plugin.firebase.mlkit.barcode.scanner.SecondaryActivity"/>
-            <activity android:screenOrientation="portrait" android:label="Read Barcode" android:name="tl.cordova.plugin.firebase.mlkit.barcode.scanner.BarcodeCaptureActivity" android:theme="@style/Theme.AppCompat.Light"/>
+            <activity android:exported="false" android:screenOrientation="portrait" android:label="@string/title_activity_main" android:name="tl.cordova.plugin.firebase.mlkit.barcode.scanner.SecondaryActivity"/>
+            <activity android:exported="false" android:screenOrientation="portrait" android:label="Read Barcode" android:name="tl.cordova.plugin.firebase.mlkit.barcode.scanner.BarcodeCaptureActivity" android:theme="@style/Theme.AppCompat.Light"/>
         </config-file>
 
         <config-file target="res/values/strings.xml" parent="/*">
