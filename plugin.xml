@@ -43,7 +43,7 @@
 
         <config-file parent="/*" target="app/src/main/AndroidManifest.xml">
             <uses-permission android:name="android.permission.CAMERA" />
-            <uses-feature android:name="android.hardware.camera.autofocus" />
+            <uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/>
         </config-file>
         <config-file parent="application" target="app/src/main/AndroidManifest.xml">
             <meta-data
